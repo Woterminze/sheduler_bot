@@ -3,20 +3,20 @@ from datetime import datetime, timedelta
 import re
 from telebot.types import BotCommand
 
-
-
 # Токен, полученный у BotFather
 TOKEN = "7502031975:AAGhSpo_ip_xggTfW8eiWDgBshJJnXI6nYY"
 bot = telebot.TeleBot(TOKEN)
 
 # Список дежурных
-duty_list = ["Яна", "Таня", "Маша"]
+duty_list = ["Яна", "Таня", "Булат", "Юля"]
 # Словарь с расписанием дежурств и участников (список расписаний для каждого участника)
 schedule = {}
+
 
 # Убираем никнейм бота из команды с помощью регулярного выражения
 def clean_command_text(message, command):
     return re.sub(f"/{command}(?:@{bot.get_me().username})?", f"/{command}", message.text).strip()
+
 
 # Команда для установки дежурных
 # @bot.message_handler(commands=["set_duty"])
@@ -46,22 +46,23 @@ def who_is_on_duty(message):
     if not duty_list:
         bot.reply_to(message, "Список дежурных не установлен.")
         return
-    
+
     # Определение текущей недели и вычисление дат
     today = datetime.now().date()
     week_num = (today - datetime(today.year, 1, 1).date()).days // 7
     current_duty = duty_list[week_num % len(duty_list)]
-    
+
     # Начало и конец текущей недели (понедельник - воскресенье)
     start_of_week = today - timedelta(days=today.weekday())
     end_of_week = start_of_week + timedelta(days=6)
-    
+
     # Форматируем вывод с датами
     bot.reply_to(
-        message, 
+        message,
         f"Дежурный на этой неделе: {current_duty}\n"
         f"Период дежурства: {start_of_week.strftime('%d.%m.%Y')} - {end_of_week.strftime('%d.%m.%Y')}"
     )
+
 
 # # Команда для добавления расписания участнику
 # @bot.message_handler(commands=["add_schedule"])
@@ -96,7 +97,7 @@ def who_is_on_duty(message):
 @bot.message_handler(commands=["help"])
 def help_command(message):
     bot.reply_to(message, (
-        "/list_duty Показать список дежурных(задается Таней)\n"
+        "/list_duties Показать список дежурных(задается Таней)\n"
         "/who_is_on_duty - Показать, кто дежурный на этой неделе с диапазоном дат\n"
     ))
 
